@@ -1,7 +1,6 @@
 package com.seleniumproject.tests;
 
 import java.time.Duration;
-import java.util.Date;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -13,7 +12,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import com.sun.jdi.Method;
+import com.seleniumproject.qa.tests.Utilities;
+
 
 public class Login {
 
@@ -68,7 +68,7 @@ public class Login {
 	@Test(priority = 2)
 	public void VerifyLoginWithValidEmailInvalidPassword() throws InterruptedException {
 
-		driver.findElement(By.id("input-email")).sendKeys("john.peter1" + generateTimestamp() + "@gmail.com");
+		driver.findElement(By.id("input-email")).sendKeys(Utilities.generateEmailTimestamp());
 		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("1234556789");
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		String actualMessage = driver.findElement(By.xpath("//div[contains(@class, 'alert')]")).getText();
@@ -81,7 +81,7 @@ public class Login {
 	@Test(priority = 3)
 	public void VerifyLoginWithInValidEmaiValidPassword() throws InterruptedException {
 
-		driver.findElement(By.id("input-email")).sendKeys("john.peter112" + generateTimestamp() + "@gmail.com");
+		driver.findElement(By.id("input-email")).sendKeys(Utilities.generateEmailTimestamp());
 		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("1234556789");
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		String actualMessage = driver.findElement(By.xpath("//div[contains(@class, 'alert')]")).getText();
@@ -94,7 +94,7 @@ public class Login {
 	@Test(priority = 4)
 	public void VerifyLoginWithInValidEmaiInValidPassword() throws InterruptedException {
 
-		driver.findElement(By.id("input-email")).sendKeys("john.peter145" + generateTimestamp() + "@gmail.com");
+		driver.findElement(By.id("input-email")).sendKeys(Utilities.generateEmailTimestamp());
 		Thread.sleep(3000);
 		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("1234556789");
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
@@ -118,15 +118,6 @@ public class Login {
 
 	}
 
-	public String generateTimestamp() {
 
-		Date date = new Date();
-
-		return date.toString().replace(" ", "_").replace(":", "_");
-
-	}
-
-	// ValidEmail and Invalid Password
-	// Both invalid credentials
 
 }
