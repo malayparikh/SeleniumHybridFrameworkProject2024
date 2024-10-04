@@ -1,21 +1,23 @@
 package com.seleniumproject.tests;
 
-import java.time.Duration;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.seleniumproject.qa.base.Base;
 import com.seleniumproject.qa.tests.Utilities;
 
+//import com.seleniumproject.qa.tests.Utilities;
 
-public class Login {
+public class Login extends Base {
+
+	public Login() {
+
+		super();
+	}
 
 	@AfterMethod
 	public void teadDown() {
@@ -29,23 +31,8 @@ public class Login {
 	@BeforeMethod
 	public void setUp() {
 
-		String browserName = "edge";
-
-		if (browserName.equals("chrome")) {
-
-			driver = new ChromeDriver();
-		} else if (browserName.equals("firefox")) {
-
-			driver = new FirefoxDriver();
-		} else if (browserName.equals("edge")) {
-
-			driver = new EdgeDriver();
-		}
-
-		// driver = new ChromeDriver();
-		driver.manage().window().maximize();
-		driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-		driver.get("https://tutorialsninja.com/demo/");
+		loadPropertiesFile();
+		driver = initializeBrowserAndOpenURL(prop.getProperty("browserName"));
 		driver.findElement(By.linkText("My Account")).click();
 		driver.findElement(By.linkText("Login")).click();
 		System.out.println("Before Method- Open URL and navigate");
@@ -57,8 +44,8 @@ public class Login {
 	@Test(priority = 1)
 	public void verifyLoginWithValidCredentials() throws InterruptedException {
 
-		driver.findElement(By.id("input-email")).sendKeys("john.peter1@gmail.com");
-		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("12345");
+		driver.findElement(By.id("input-email")).sendKeys(prop.getProperty("validEmail"));
+		driver.findElement(By.xpath("//input[@name='password']")).sendKeys(prop.getProperty("validPassword"));
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		Assert.assertTrue(driver.findElement(By.linkText("Edit your account information")).isDisplayed());
 		System.out.println("Test Method-1");
@@ -117,7 +104,5 @@ public class Login {
 		System.out.println("Test Method-5");
 
 	}
-
-
 
 }
