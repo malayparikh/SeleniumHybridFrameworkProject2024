@@ -16,11 +16,23 @@ public class Base {
 
 	WebDriver driver;
 	public Properties prop;
+	public Properties dataProp;
 
 	public void loadPropertiesFile() {
 
 		prop = new Properties();
 		File propFile = new File("D:\\Javabasics_workspace\\com.seleniumproject.tests\\src\\main\\java\\com\\seleniumproject\\qa\\config\\config.properties");
+		
+		dataProp = new Properties();
+		File dataPropFile = new File("D:\\Javabasics_workspace\\com.seleniumproject.tests\\src\\main\\java\\com\\seleniumproject\\qa\\testdata\\testdata.properties");
+		
+		try {
+		FileInputStream dataFis = new FileInputStream(dataPropFile);
+		dataProp.load(dataFis);
+		}catch(Throwable e) {
+			e.printStackTrace();
+		}
+		
 		try {
 			FileInputStream fis = new FileInputStream(propFile);
 			prop.load(fis);
