@@ -3,10 +3,16 @@ package com.seleniumproject.tests;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.testng.Assert;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.seleniumproject.qa.base.Base;
 import com.seleniumproject.qa.tests.Utilities;
 
@@ -14,13 +20,44 @@ import com.seleniumproject.qa.tests.Utilities;
 
 public class Login extends Base {
 
+	ExtentReports extent; // Instance for the entire class
+	ExtentTest test; // Instance for each test case
+	WebDriver driver;
+
 	public Login() {
 
 		super();
 	}
 
+	@BeforeClass
+	public void setupExtent() {
+		// Initialize extent reports once before any test
+		ExtentSparkReporter spark = new ExtentSparkReporter("target/LoginTests.html");
+		extent = new ExtentReports();
+		extent.attachReporter(spark);
+
+	}
+
+	@AfterClass
+	public void flushExtent() {
+
+		if (extent != null) {
+			extent.flush();
+		}
+
+	}
+
 	@AfterMethod
-	public void teadDown() {
+	public void teadDown(ITestResult result) {
+
+		if (result.getStatus() == ITestResult.FAILURE) {
+
+			test.fail(result.getThrowable());
+		} else if (result.getStatus() == ITestResult.SUCCESS) {
+			test.pass("Test Passed");
+		} else if (result.getStatus() == ITestResult.SKIP) {
+			test.skip("Test Skipper: " + result.getThrowable());
+		}
 
 		System.out.println("After Method- Close Browser");
 
@@ -39,10 +76,10 @@ public class Login extends Base {
 
 	}
 
-	WebDriver driver;
-
 	@Test(priority = 1)
 	public void verifyLoginWithValidCredentials() throws InterruptedException {
+
+		test = extent.createTest("verify the Login With Valid ;Credentials");
 
 		driver.findElement(By.id("input-email")).sendKeys(prop.getProperty("validEmail"));
 		driver.findElement(By.xpath("//input[@name='password']")).sendKeys(prop.getProperty("validPassword"));
@@ -55,11 +92,13 @@ public class Login extends Base {
 	@Test(priority = 2)
 	public void VerifyLoginWithValidEmailInvalidPassword() throws InterruptedException {
 
+		test = extent.createTest("Verify Login With Valid Email Invalid Password");
+
 		driver.findElement(By.id("input-email")).sendKeys(Utilities.generateEmailTimestamp());
-		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("1234556789");
+		driver.findElement(By.xpath("//input[@name='password']")).sendKeys(dataProp.getProperty("invalidPassword"));
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		String actualMessage = driver.findElement(By.xpath("//div[contains(@class, 'alert')]")).getText();
-		String expectedMessage = "Warning: No match for E-Mail Address and/or Password";
+		String expectedMessage = dataProp.getProperty("emailPasswordNotMatchingWarning");
 		Assert.assertTrue(actualMessage.contains(expectedMessage));
 		System.out.println("Test Method-2");
 
@@ -68,11 +107,13 @@ public class Login extends Base {
 	@Test(priority = 3)
 	public void VerifyLoginWithInValidEmaiValidPassword() throws InterruptedException {
 
+		test = extent.createTest("Verify Login With InValid Emai and Valid Password");
+
 		driver.findElement(By.id("input-email")).sendKeys(Utilities.generateEmailTimestamp());
 		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("1234556789");
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		String actualMessage = driver.findElement(By.xpath("//div[contains(@class, 'alert')]")).getText();
-		String expectedMessage = "Warning: No match for E-Mail Address and/or Password";
+		String expectedMessage = dataProp.getProperty("emailPasswordNotMatchingWarning");
 		Assert.assertTrue(actualMessage.contains(expectedMessage));
 		System.out.println("Test Method-3");
 
@@ -81,12 +122,14 @@ public class Login extends Base {
 	@Test(priority = 4)
 	public void VerifyLoginWithInValidEmaiInValidPassword() throws InterruptedException {
 
+		test = extent.createTest("Verify Login With InValid Emai and InValid Password");
+
 		driver.findElement(By.id("input-email")).sendKeys(Utilities.generateEmailTimestamp());
 		Thread.sleep(3000);
 		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("1234556789");
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		String actualMessage = driver.findElement(By.xpath("//div[contains(@class, 'alert')]")).getText();
-		String expectedMessage = "Warning: No match for E-Mail Address and/or Password";
+		String expectedMessage = dataProp.getProperty("emailPasswordNotMatchingWarning");
 		Assert.assertTrue(actualMessage.contains(expectedMessage));
 		System.out.println("Test Method-4");
 
@@ -95,11 +138,13 @@ public class Login extends Base {
 	@Test(priority = 5)
 	public void VerifyLoginWithBlankEmailAndPassword() throws InterruptedException {
 
+		test = extent.createTest("Verify Login With Blank Email And Password");
+
 		driver.findElement(By.id("input-email")).sendKeys("");
 		driver.findElement(By.xpath("//input[@name='password']")).sendKeys("");
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		String actualMessage = driver.findElement(By.xpath("//div[contains(@class, 'alert')]")).getText();
-		String expectedMessage = "Warning: No match for E-Mail Address and/or Password";
+		String expectedMessage = dataProp.getProperty("emailPasswordNotMatchingWarning");
 		Assert.assertTrue(actualMessage.contains(expectedMessage));
 		System.out.println("Test Method-5");
 
