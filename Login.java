@@ -8,6 +8,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.aventstack.extentreports.ExtentReports;
@@ -76,16 +77,25 @@ public class Login extends Base {
 
 	}
 
-	@Test(priority = 1)
-	public void verifyLoginWithValidCredentials() throws InterruptedException {
+	@Test(priority = 1, dataProvider = "validCredentialSupplier")
+	public void verifyLoginWithValidCredentials(String email, String password) throws InterruptedException {
 
 		test = extent.createTest("verify the Login With Valid ;Credentials");
 
-		driver.findElement(By.id("input-email")).sendKeys(prop.getProperty("validEmail"));
-		driver.findElement(By.xpath("//input[@name='password']")).sendKeys(prop.getProperty("validPassword"));
+		driver.findElement(By.id("input-email")).sendKeys(email);
+		driver.findElement(By.xpath("//input[@name='password']")).sendKeys(password);
 		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
 		Assert.assertTrue(driver.findElement(By.linkText("Edit your account information")).isDisplayed());
 		System.out.println("Test Method-1");
+
+	}
+
+	@DataProvider(name = "validCredentialSupplier")
+	public Object[][] supplyTestData() {
+
+		Object[][] data = { { "john.pet123@gmail.com", "12345" }, { "john.pan@gmail.com", "12345" },
+				{ "john.peter1@gmail.com", "12345" } };
+		return data;
 
 	}
 
