@@ -15,6 +15,8 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.seleniumproject.qa.base.Base;
+import com.seleniumproject.qa.pages.HomePage;
+import com.seleniumproject.qa.pages.LoginPage;
 import com.seleniumproject.qa.tests.Utilities;
 
 //import com.seleniumproject.qa.tests.Utilities;
@@ -71,20 +73,25 @@ public class Login extends Base {
 
 		loadPropertiesFile();
 		driver = initializeBrowserAndOpenURL(prop.getProperty("browserName"));
-		driver.findElement(By.linkText("My Account")).click();
-		driver.findElement(By.linkText("Login")).click();
-		System.out.println("Before Method- Open URL and navigate");
-
-	}
+		HomePage homePage = new HomePage(driver);
+		homePage.clickOnMyAccount();
+		homePage.selectLoginOption();
+	
+		}
 
 	@Test(priority = 1, dataProvider = "validCredentialSupplier")
 	public void verifyLoginWithValidCredentials(String email, String password) throws InterruptedException {
 
 		test = extent.createTest("verify the Login With Valid ;Credentials");
+		
+		LoginPage loginPage = new LoginPage(driver);
 
-		driver.findElement(By.id("input-email")).sendKeys(email);
-		driver.findElement(By.xpath("//input[@name='password']")).sendKeys(password);
-		driver.findElement(By.xpath("//input[@class='btn btn-primary']")).click();
+		loginPage.enterEmailAddress(email);
+		loginPage.enterPassword(password);
+		loginPage.clickOnLoginButton();
+		
+	
+	
 		Assert.assertTrue(driver.findElement(By.linkText("Edit your account information")).isDisplayed());
 		System.out.println("Test Method-1");
 
@@ -93,8 +100,7 @@ public class Login extends Base {
 	@DataProvider(name = "validCredentialSupplier")
 	public Object[][] supplyTestData() {
 
-		Object[][] data = { { "john.pet123@gmail.com", "12345" }, { "john.pan@gmail.com", "12345" },
-				{ "john.peter1@gmail.com", "12345" } };
+		Object[][] data = Utilities.getTestDataFromExcel("Login");
 		return data;
 
 	}
